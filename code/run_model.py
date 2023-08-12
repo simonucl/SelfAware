@@ -152,20 +152,19 @@ if __name__ == "__main__":
     if model_name in llama_list:
         model = AutoModelForCausalLM.from_pretrained(model_dict[model_name]).half().cuda()
         tokenizer = AutoTokenizer.from_pretrained(model_dict[model_name])
-
-    for i in trange(length):
-        question = data_list[i]["question"]
-        input_context = generate_input_context(question, input_form)
-        if model_name in GPT_list:
-            generated_text = get_gpt_info(model_name, input_context, temperature)
-        elif model_name in ChatGPT_list:
-            generated_text = get_chatgpt_info(model_name, input_context, temperature)
-        elif model_name in llama_list:
-            input_ids = tokenizer.encode(input_context, return_tensors="pt").to(device)
-            output = model.generate(input_ids, temperature=temperature, num_return_sequences=1, max_length=1024)
-            generated_text = tokenizer.decode(output[0], skip_special_tokens=True)[len(input_context):]
-        generated_text = generated_text.lower()
-        data_list[i]["generated_text"] = generated_text
+        
     with jsonlines.open("{}/{}_{}_T_{}.jsonl".format(model_name, input_form, model_name, temperature), mode="a") as writer:
         for i in trange(length):
+            question = data_list[i]["question"]
+            input_context = generate_input_context(question, input_form)
+            if model_name in GPT_list:
+                generated_text = get_gpt_info(model_name, input_context, temperature)
+            elif model_name in ChatGPT_list:
+                generated_text = get_chatgpt_info(model_name, input_context, temperature)
+            elif model_name in llama_list:
+                input_ids = tokenizer.encode(input_context, return_tensors="pt").to(device)
+                output = model.generate(input_ids, temperature=temperature, num_return_sequences=1, max_length=1024)
+                generated_text = tokenizer.decode(output[0], skip_special_tokens=True)[len(input_context):]
+            generated_text = generated_text.lower()
+            data_list[i]["generated_text"] = generated_text
             writer.write(data_list[i])
