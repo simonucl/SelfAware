@@ -1,1 +1,1 @@
-python run_model.py --model-name alpaca-7b
+python3 run_model.py --model-name llama2-7b

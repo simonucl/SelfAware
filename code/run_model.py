@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
     GPT_list = ["ada", "babbage", "curie", "davinci", "text-ada-001", "text-babbage-001", "text-curie-001", "text-davinci-001", "text-davinci-002", "text-davinci-003"]
     ChatGPT_list = ["gpt-3.5-turbo-0301", "gpt-4-0314"]
-    llama_list = ["llama-7b", "llama-13b", "llama-30b", "llama-65b", "alpaca-7b", "alpaca-13b", "vicuna-7b", "vicuna-13b"]
+    llama_list = ["llama-7b", "llama-13b", "llama-30b", "llama-65b", "alpaca-7b", "alpaca-13b", "vicuna-7b", "vicuna-13b", "llama2-7b", "llama2-13b", "llama2-70b"]
     model_dict = {"llama-7b": "decapoda-research/llama-7b-hf", 
     "llama-13b": "decapoda-research/llama-13b-hf", 
     "llama-30b": "decapoda-research/llama-30b-hf", 
@@ -146,8 +146,8 @@ if __name__ == "__main__":
     "alpaca-13b": "chavinlo/alpaca-13b", 
     "vicuna-7b": "eachadea/vicuna-7b-1.1", 
     "vicuna-13b": "eachadea/vicuna-13b-1.1",
-    "llama2-7b": "meta-llama/Llama-2-7b-hf",
-    "llama2-13b": "meta-llama/Llama-2-13b-hf",
+    "llama2-7b": "meta-llama/Llama-2-7b-chat-hf",
+    "llama2-13b": "meta-llama/Llama-2-13b-chat-hf",
     }
     if model_name in llama_list:
         model = AutoModelForCausalLM.from_pretrained(model_dict[model_name]).half().cuda()
@@ -166,5 +166,6 @@ if __name__ == "__main__":
             generated_text = tokenizer.decode(output[0], skip_special_tokens=True)[len(input_context):]
         generated_text = generated_text.lower()
         data_list[i]["generated_text"] = generated_text
-        with jsonlines.open("{}/{}_{}_T_{}.jsonl".format(model_name, input_form, model_name, temperature), mode="a") as writer:
+    with jsonlines.open("{}/{}_{}_T_{}.jsonl".format(model_name, input_form, model_name, temperature), mode="a") as writer:
+        for i in trange(length):
             writer.write(data_list[i])
