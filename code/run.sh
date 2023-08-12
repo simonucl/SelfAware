@@ -1,0 +1,1 @@
+python run_model.py --model-name alpaca-7b
